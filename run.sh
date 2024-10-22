@@ -1,32 +1,28 @@
-JobBatchName            = "attention replace"
-universe                = vanilla
+#!/bin/bash
+# Following the example from http://chtc.cs.wisc.edu/conda-installation.shtml
+# except here we download the installer instead of transferring it
+# Download a specific version of Miniconda instead of latest to improve
+# reproducibility
 
-# Artefact
-Requirements            = (Target.HasCHTCStaging == true)
-executable              = run.sh
-transfer_input_files    = models.py,main.py,datasets.py,train.py,utils.py,loss.py,environment.yml,cifar-100-python.tar.gz
-should_transfer_files   = YES
-when_to_transfer_output = ON_EXIT
+# unzip 
+tar zxf cifar-100-python.tar.gz
 
-# Logging
-stream_output           = true
-output = $(Cluster)_$(Process).out
-error  = $(Cluster)_$(Process).err
+export HOME=$PWD
+wget -q https://repo.anaconda.com/miniconda/Miniconda3-py39_4.10.3-Linux-x86_64.sh -O miniconda.sh
+sh miniconda.sh -b -p $HOME/miniconda3
+rm miniconda.sh
+export PATH=$HOME/miniconda3/bin:$PATH
 
-# Compute resources
-request_cpus            = 4
-request_memory          = 16GB
-request_disk            = 20GB
+# Set up conda
+source $HOME/miniconda3/etc/profile.d/conda.sh
+hash -r
+conda config --set always_yes yes --set changeps1 no
 
-# Extra GPU settings
-request_gpus            = 1
-Requirements            = (Target.CUDADriverVersion >= 10.1)
-+WantGPULab             = true
-# change to true if *not* using staging for checkpoints and interested in accessing GPUs beyond CHTC
-+WantFlocking           = false
-+WantGlidein            = false
-+GPUJobLength           = "short"
+# Install packages specified in the environment file
+conda env create -f environment.yml
 
-# Runs
-queue 1
+# Activate the environment and log all packages that were installed
+conda activate attenreplace
+
+python main.py
 
