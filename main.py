@@ -3,7 +3,6 @@ import torch
 import datetime
 import argparse
 
-import numpy as np
 import torch.nn as nn
 import torch.backends.cudnn as cudnn
 
@@ -13,7 +12,6 @@ from train import train_model, evaluate
 from models import MixerBlock, EmptyBlock, param_dict_all, param_dict_qkv
 
 from pathlib import Path
-from torchsummary import summary
 from timm.utils import NativeScaler
 from timm.models import create_model
 from timm.optim import create_optimizer
@@ -37,7 +35,7 @@ def get_args_parser():
     parser.add_argument('--train', action='store_true', help='Train replaced Mixer blockes')
     
     # data parameters
-    parser.add_argument("--data-path", default="/home/u17/yuxinr/datasets/", type=str, help="dataset path")
+    parser.add_argument("--data-path", default="./data", type=str, help="dataset path")
     parser.add_argument("--data-set", default="CIFAR", choices=["CIFAR", "IMNET", "INAT", "INAT19"],
                         type=str, help="Image Net dataset path")
     parser.add_argument("--nb-classes", default=100, type=int, help="number of classes (default:100)")
@@ -76,7 +74,7 @@ def get_args_parser():
     
     # training parameters
     parser.add_argument('--device', default='cuda', help='device to use for training / testing')
-    parser.add_argument('--output-dir', default='', help='path where to save, empty for no saving')
+    parser.add_argument('--output-dir', default='/home/xfei22', help='path where to save, empty for no saving')
     parser.add_argument('--epochs', default=100, type=int)
     parser.add_argument('--start_epoch', default=0, type=int, metavar='N', help='start epoch')
     parser.add_argument('--batch-size', default=512, type=int)
@@ -289,7 +287,8 @@ def main(args):
         criterion = CosineSimilarityLoss()
         
         current_time = datetime.datetime.now()
-        output_dir = "/home/u17/yuxinr/block_distill/model/" + current_time.strftime("%Y-%m-%d-%H-%M") + "/"
+        output_dir = "/home/xfei22/" + \
+            current_time.strftime("%Y-%m-%d-%H-%M") + "/"
         args.output_dir = Path(output_dir)
         args.output_dir.mkdir(parents=True, exist_ok=True)
         

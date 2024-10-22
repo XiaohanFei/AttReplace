@@ -1,0 +1,10 @@
+name: attenreplace
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - nvidia::cudatoolkit=11.7
+  - python=3.10
+  - pytorch::pytorch=1.13.1
+  - torchvision
+  - timm
