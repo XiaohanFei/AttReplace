@@ -109,12 +109,12 @@ def train_model(args, model, teacher_model,
             args = args,
         )
 
-        # lr_scheduler.step(epoch)
+        lr_scheduler.step(epoch)
         
         model_dict = {
             'model': model.state_dict(),
             'optimizer': optimizer.state_dict(),
-            # 'lr_scheduler': lr_scheduler.state_dict(),
+            'lr_scheduler': lr_scheduler.state_dict(),
             'epoch': epoch,
             'scaler': loss_scaler.state_dict(),
             'args': args,

@@ -3,6 +3,7 @@ import torch
 import datetime
 import argparse
 
+import numpy as np
 import torch.nn as nn
 import torch.backends.cudnn as cudnn
 
@@ -74,8 +75,8 @@ def get_args_parser():
     
     # training parameters
     parser.add_argument('--device', default='cuda', help='device to use for training / testing')
-    parser.add_argument('--output-dir', default='/home/xfei22', help='path where to save, empty for no saving')
-    parser.add_argument('--epochs', default=100, type=int)
+    parser.add_argument('--output-dir', default='', help='path where to save, empty for no saving')
+    parser.add_argument('--epochs', default=50, type=int)
     parser.add_argument('--start_epoch', default=0, type=int, metavar='N', help='start epoch')
     parser.add_argument('--batch-size', default=512, type=int)
     parser.add_argument("--drop", type=float, default=0.0, metavar="PCT",
@@ -92,7 +93,7 @@ def get_args_parser():
     
     # Learning rate schedule parameters
     parser.add_argument('--unscale-lr', action='store_true')
-    parser.add_argument('--lr', type=float, default=5e-3, metavar='LR',
+    parser.add_argument('--lr', type=float, default=1e-3, metavar='LR',
                         help='learning rate (default: 5e-4)')
     parser.add_argument('--sched', default='cosine', type=str, metavar='SCHEDULER',
                         help='LR scheduler (default: "cosine"')
@@ -287,8 +288,7 @@ def main(args):
         criterion = CosineSimilarityLoss()
         
         current_time = datetime.datetime.now()
-        output_dir = "/home/xfei22/" + \
-            current_time.strftime("%Y-%m-%d-%H-%M") + "/"
+        output_dir = "/home/xfei22/" +current_time.strftime("%Y-%m-%d-%H-%M") + "/"
         args.output_dir = Path(output_dir)
         args.output_dir.mkdir(parents=True, exist_ok=True)
         
@@ -300,7 +300,8 @@ def main(args):
         # print(trained_model)
         save_path = args.output_dir / "replaced_model.pth"
         trained_model_dict["model"] = trained_model.state_dict()
-        torch.save(trained_model_dict, save_path)
+        # torch.save(trained_model_dict, save_path)
+        torch.save(trained_model, save_path)
         
     else:
         raise ValueError("Please specify running mode (eval/train).") 
@@ -326,9 +327,10 @@ if __name__ == '__main__':
     args.d_weight = deit_weight
     args.replace = repl_index
     args.rep_mode = "all"
+    args.epochs = 100
     
     args.train = True
-    args.sched = "constant"
+    # args.sched = "constant"
         
     main(args)
 
